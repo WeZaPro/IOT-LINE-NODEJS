@@ -30,50 +30,61 @@ const options = {
 // Create a client instance
 const client = mqtt.connect(brokerUrl, options);
 
-// client.on('connect', () => {
-//   console.log('Connected to MQTT broker');
+// Define the topic you want to subscribe to
+// const topic = 'test';
+// const topic = 'esp8266_data';
 
-//   // Subscribe to the topic
-//   client.subscribe(topic, (err) => {
-//     if (!err) {
-//       console.log(`Subscribed to topic: ${topic}`);
-//     } else {
-//       console.error(`Failed to subscribe to topic: ${topic}`, err);
-//     }
-//   });
-// });
+// Handle connection event
+client.on('connect', () => {
+  console.log('Connected to MQTT broker');
 
-// var myJSON = '';
+  // Subscribe to the topic
+  client.subscribe(topic, (err) => {
+    if (!err) {
+      console.log(`Subscribed to topic: ${topic}`);
+    } else {
+      console.error(`Failed to subscribe to topic: ${topic}`, err);
+    }
+  });
+});
 
-// // Handle incoming messages
-// client.on('message', (topic, message) => {
-//   // message is a Buffer
-//   console.log(`### Received message from ${topic}: ${message.toString()}`);
+var myJSON = '';
 
-//   myJSON = JSON.parse(message.toString());
-//   console.log('myJSON-> ', myJSON);
+// Handle incoming messages
+client.on('message', (topic, message) => {
+  // message is a Buffer
+  console.log(`### Received message from ${topic}: ${message.toString()}`);
 
-//   console.log('myJSON temperature-> ', myJSON.temperature);
-//   console.log('myJSON humidity-> ', myJSON.humidity);
-//   console.log('myJSON led_status:-> ', myJSON.led_status);
-// });
+  // const myJSON = JSON.stringify(message);
+  myJSON = JSON.parse(message.toString());
+  console.log('myJSON-> ', myJSON);
 
-// client.on('error', (err) => {
-//   console.error('Connection error: ', err);
-// });
+  console.log('myJSON temperature-> ', myJSON.temperature);
+  console.log('myJSON humidity-> ', myJSON.humidity);
+  console.log('myJSON led_status:-> ', myJSON.led_status);
+});
 
-// client.on('close', () => {
-//   console.log('Connection closed');
-// });
+// Handle error event
+client.on('error', (err) => {
+  console.error('Connection error: ', err);
+});
 
-// client.on('offline', () => {
-//   console.log('Client is offline');
-// });
+// // Handle close event
+client.on('close', () => {
+  console.log('Connection closed');
+});
 
-// // Handle reconnect event
-// client.on('reconnect', () => {
-//   console.log('Reconnecting to MQTT broker');
-// });
+// // Handle offline event
+client.on('offline', () => {
+  console.log('Client is offline');
+});
+
+// client.publish('led_state', '1');
+
+// Handle reconnect event
+client.on('reconnect', () => {
+  console.log('Reconnecting to MQTT broker');
+});
 
 app.post('/', (req, res) => {
   // console.log('/ post', req.body.led);
@@ -120,11 +131,11 @@ app.post('/', (req, res) => {
 
 app.get('/nodemcu', (req, res) => {
   console.log('/ nodemcu');
-  res.send({ message: 'nodemcu' });
-  // res.send({ message: myJSON });
-  // client.on('close', () => {
-  //   console.log('Connection closed');
-  // });
+
+  res.send({ message: myJSON });
+  client.on('close', () => {
+    console.log('Connection closed');
+  });
 });
 
 app.get('/sub', (req, res) => {
