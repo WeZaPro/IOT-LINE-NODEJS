@@ -167,7 +167,7 @@ app.get('/sub', (req, res) => {
 
 app.get('/', (req, res) => {
   console.log('get path -----');
-  res.send('GET ');
+  res.send('GET NODEMCU');
 });
 
 // line
