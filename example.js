@@ -258,7 +258,7 @@ function onoff(value) {
   client.publish(
     'led_state',
     value,
-    { qos: 1, retain: false },
+    { QoS: 1, retain: false },
     function (error) {
       if (error) {
         console.log(error);
