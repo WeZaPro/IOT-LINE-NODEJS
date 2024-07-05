@@ -259,7 +259,8 @@ function onoff(value) {
   client.publish(
     'led_state',
     value,
-    { QoS: 1, retain: false },
+    // { QoS: 1, retain: false },
+    { QoS: 0, retain: false }, //  เวลาในการส่ง
     function (error) {
       if (error) {
         console.log(error);
